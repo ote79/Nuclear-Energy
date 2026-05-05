@@ -1,0 +1,9 @@
+.idea/
+*.iml
+
+backend/target/
+frontend
+
+
+.env
+.env.*
