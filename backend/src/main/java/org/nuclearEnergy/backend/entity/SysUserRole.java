@@ -1,4 +1,4 @@
-package org.example.backend.entity;
+package org.nuclearEnergy.backend.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

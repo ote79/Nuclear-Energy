@@ -1,7 +1,7 @@
-package org.example.backend.exception;
+package org.nuclearEnergy.backend.exception;
 
 
-import org.example.backend.common.Result;
+import org.nuclearEnergy.backend.common.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

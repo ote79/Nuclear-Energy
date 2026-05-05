@@ -1,4 +1,4 @@
-package org.example.backend.entity;
+package org.nuclearEnergy.backend.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -8,25 +8,16 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sys_user")
-public class SysUser {
-
-    @TableId(value = "id",type = IdType.AUTO)
+@TableName("sys_role")
+public class SysRole {
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-    private String username;
 
-    private String password;
+    private String roleName;
 
-    private String nickname;
-
-    private String phone;
-
-    private String email;
-
-    private Integer status;
+    private String roleCode;
 
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
-
 }

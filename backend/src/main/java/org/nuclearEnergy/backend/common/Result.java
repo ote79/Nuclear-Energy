@@ -1,4 +1,4 @@
-package org.example.backend.common;
+package org.nuclearEnergy.backend.common;
 
 
 import lombok.Data;

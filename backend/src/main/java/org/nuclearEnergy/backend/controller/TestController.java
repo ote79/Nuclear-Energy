@@ -1,10 +1,10 @@
-package org.example.backend.controller;
+package org.nuclearEnergy.backend.controller;
 
 
-import org.example.backend.common.Result;
-import org.example.backend.entity.SysUser;
-import org.example.backend.exception.BusinessException;
-import org.example.backend.mapper.SysUserMapper;
+import org.nuclearEnergy.backend.common.Result;
+import org.nuclearEnergy.backend.entity.SysUser;
+import org.nuclearEnergy.backend.exception.BusinessException;
+import org.nuclearEnergy.backend.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

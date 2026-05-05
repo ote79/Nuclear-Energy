@@ -1,4 +1,4 @@
-package org.example.backend.config;
+package org.nuclearEnergy.backend.config;
 
 
 import org.springframework.context.annotation.Bean;

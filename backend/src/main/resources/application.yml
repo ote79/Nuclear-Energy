@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: nuclear-energy-popularization
+    name: nuclear-energy
 
   security:
     user:

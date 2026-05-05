@@ -1,4 +1,4 @@
-package org.example.backend.exception;
+package org.nuclearEnergy.backend.exception;
 
 import lombok.Getter;
 
