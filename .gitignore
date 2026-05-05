@@ -1,9 +1,32 @@
+
+.DS_Store
+Thumbs.db
+
 .idea/
+.vscode/
 *.iml
+*.ipr
+*.iws
 
-backend/target/
-frontend
 
+*.log
+logs/
 
 .env
 .env.*
+*.local
+
+**/target/
+**/.flattened-pom.xml
+
+
+**/*.class
+
+**/node_modules/
+**/dist/
+**/.vite/
+**/coverage/
+
+
+*.tmp
+*.temp
