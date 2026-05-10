@@ -24,3 +24,7 @@ mybatis-plus:
 logging:
   level:
     org.example.nuclearenergypopularization: debug
+
+jwt:
+  secret: nuclear-energy-secret
+  expire-time: 86400000
