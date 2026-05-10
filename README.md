@@ -39,7 +39,7 @@ backend：后端目录已初始化
 
 -feature/docs-update
 
-开发流程
+开发流程：
 
 开发前先同步最新dev分支
 
