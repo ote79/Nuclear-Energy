@@ -2,6 +2,8 @@ package org.nuclearEnergy.backend.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UserInfoVO {
 
@@ -17,4 +19,5 @@ public class UserInfoVO {
 
     private Integer status;
 
+    List<String> roles;
 }
