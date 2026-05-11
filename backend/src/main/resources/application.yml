@@ -5,11 +5,6 @@ spring:
   application:
     name: nuclear-energy
 
-  security:
-    user:
-      name: user
-      password: 123456
-
   datasource:
     url: jdbc:mysql://localhost:3306/project1
     username: root
