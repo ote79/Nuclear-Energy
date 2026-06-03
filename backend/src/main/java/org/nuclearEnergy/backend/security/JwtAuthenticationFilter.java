@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.nuclearEnergy.backend.mapper.SysRoleMapper;
 import org.nuclearEnergy.backend.utils.JwtUtils;
+import org.nuclearEnergy.backend.vo.RoleItemVO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -47,7 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Long userId = jwtUtils.getUserId(token);
 
-            List<String> roleCodes = sysRoleMapper.selectAllRolesByUserId(userId);
+
+            List<String> roleCodes = new ArrayList<>();
+            for (RoleItemVO role : sysRoleMapper.selectAllRolesByUserId(userId)){
+                roleCodes.add(role.getRoleCode());
+            }
+
 
             List<GrantedAuthority> authorities = new ArrayList<>();
             if (roleCodes != null){

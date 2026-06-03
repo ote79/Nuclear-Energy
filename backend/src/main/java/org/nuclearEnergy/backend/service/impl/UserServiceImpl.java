@@ -7,6 +7,7 @@ import org.nuclearEnergy.backend.exception.BusinessException;
 import org.nuclearEnergy.backend.mapper.SysRoleMapper;
 import org.nuclearEnergy.backend.mapper.SysUserMapper;
 import org.nuclearEnergy.backend.service.UserService;
+import org.nuclearEnergy.backend.vo.RoleItemVO;
 import org.nuclearEnergy.backend.vo.UserInfoVO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
         userInfoVO.setEmail(user.getEmail());
         userInfoVO.setStatus(user.getStatus());
 
-        List<String> roles = sysRoleMapper.selectAllRolesByUserId(user.getId());
+        List<RoleItemVO> roles = sysRoleMapper.selectAllRolesByUserId(user.getId());
         userInfoVO.setRoles(roles);
         return userInfoVO;
     }

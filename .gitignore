@@ -8,6 +8,7 @@ Thumbs.db
 *.ipr
 *.iws
 
+mysql-tunnel.cmd
 
 *.log
 logs/
