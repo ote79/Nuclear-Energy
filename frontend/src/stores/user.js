@@ -71,7 +71,6 @@ export const useUserStore = defineStore('user', () => {
       const res = await getUserInfo()
       userInfo.value = res.data
     } catch {
-      // Mock: for mock tokens, userInfo already set during login
       if (!token.value.startsWith('mock_token_')) {
         logout()
       }
