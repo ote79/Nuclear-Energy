@@ -32,4 +32,3 @@ logs/
 *.tmp
 *.temp
 /backend/src/main/resources/application-dev.yml
-/frontend/
