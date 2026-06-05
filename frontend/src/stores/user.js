@@ -8,9 +8,9 @@ function getMockUsers() {
   try { return JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '{}') } catch { return {} }
 }
 
-function saveMockUser(username, data) {
+function saveMockUser(key, data) {
   const users = getMockUsers()
-  users[username] = data
+  users[key] = data
   localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(users))
 }
 
@@ -28,19 +28,13 @@ export const useUserStore = defineStore('user', () => {
       return res
     } catch {
       const users = getMockUsers()
-      const usersList = Object.values(users)
-      // Lookup by email or phone
-      const key = form.email || form.phone
-      let user = users[key]
-      if (!user && form.phone) {
-        user = usersList.find(u => u.phone === form.phone)
-      }
+      const user = users[form.username]
       if (!user) throw new Error('账号不存在')
       if (user.password !== form.password) throw new Error('密码错误')
-      const mockToken = 'mock_token_' + key
+      const mockToken = 'mock_token_' + form.username
       token.value = mockToken
       localStorage.setItem('token', mockToken)
-      userInfo.value = { email: user.email || key, phone: user.phone, nickname: user.nickname, createdAt: user.createdAt }
+      userInfo.value = { username: form.username, nickname: user.nickname, email: user.email, phone: user.phone, createdAt: user.createdAt }
       return { data: { token: mockToken } }
     }
   }
@@ -50,17 +44,15 @@ export const useUserStore = defineStore('user', () => {
       return await registerApi(form)
     } catch {
       const users = getMockUsers()
-      if (form.email && users[form.email]) throw new Error('该邮箱已注册')
-      if (form.phone && Object.values(users).some(u => u.phone === form.phone)) throw new Error('该手机号已注册')
-      const key = form.email || form.phone
+      if (users[form.username]) throw new Error('用户名已存在')
       const userData = {
-        email: form.email,
-        phone: form.phone,
         nickname: form.nickname,
         password: form.password,
+        email: form.email || '',
+        phone: form.phone,
         createdAt: new Date().toISOString().slice(0, 10)
       }
-      saveMockUser(key, userData)
+      saveMockUser(form.username, userData)
       return { data: null }
     }
   }

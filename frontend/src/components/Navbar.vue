@@ -95,9 +95,5 @@ onMounted(() => {
 function handleLogout() {
   userStore.logout()
   router.push('/')
-
-  
 }
-
-
 </script>

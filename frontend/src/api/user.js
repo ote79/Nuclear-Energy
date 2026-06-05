@@ -1,12 +1,14 @@
 import request from './request'
 
-export const login = (data) => request.post('/user/login', data)
+export const login = (data) => request.post('/auth/login', data)
 
-export const register = (data) => request.post('/user/register', data)
+export const register = (data) => request.post('/auth/register', data)
 
-export const getUserInfo = () => request.get('/user/info')
+export const getUserInfo = () => request.get('/user/me')
 
-export const updateUserInfo = (data) => request.put('/user/update', data)
+export const updateProfile = (data) => request.post('/user/profile', data)
+
+export const changePassword = (data) => request.post('/user/password', data)
 
 export const uploadAvatar = (file) => {
   const formData = new FormData()
