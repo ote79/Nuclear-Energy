@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 2. 用户不存在
         if (user == null) {
-            throw new BusinessException(400, "用户名或密码错误");
+            throw new BusinessException(400, "用户不存在");
         }
 
         // 3. 用户状态校验（假设 1=启用，0=禁用）
