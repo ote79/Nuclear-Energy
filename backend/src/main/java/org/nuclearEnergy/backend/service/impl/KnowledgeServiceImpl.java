@@ -2,6 +2,7 @@ package org.nuclearEnergy.backend.service.impl;
 
 import org.nuclearEnergy.backend.entity.KnowledgeArticle;
 import org.nuclearEnergy.backend.entity.KnowledgeCategory;
+import org.nuclearEnergy.backend.exception.BusinessException;
 import org.nuclearEnergy.backend.mapper.KnowledgeArticleMapper;
 import org.nuclearEnergy.backend.mapper.KnowledgeCategoryMapper;
 import org.nuclearEnergy.backend.service.KnowledgeService;
@@ -46,6 +47,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     public KnowledgeArticleDetailVO getPublishedArticleById(Long id) {
 
         KnowledgeArticle article = knowledgeArticleMapper.getPublishedArticleById(id);
+        if (article == null) {
+            throw new BusinessException(404, "文章不存在");
+        }
         KnowledgeArticleDetailVO vo = new KnowledgeArticleDetailVO();
 
         vo.setId(article.getId());
