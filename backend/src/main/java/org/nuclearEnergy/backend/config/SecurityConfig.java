@@ -29,7 +29,8 @@ public class SecurityConfig {
                         "/test/**",
                         "/auth/login","/auth/register",
                         "/v3/api-docs/**","/swagger-ui.html","/swagger-ui/**","/webjars/**",
-                        "/knowledge/**"
+                        "/knowledge/**",
+                        "/course/**"
 
                         ).permitAll()
                         .anyRequest()

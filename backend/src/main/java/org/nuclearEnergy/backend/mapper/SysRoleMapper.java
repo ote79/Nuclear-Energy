@@ -22,6 +22,6 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     @Select("select role_code,role_name from sys_role sr left join sys_user_role sur on sr.id = sur.role_id where sur.user_id = #{userId}")
     List<RoleItemVO> selectAllRolesByUserId(long userId);
 
-//    @Select("select su.id userId,su.phone,su.username,su.nickname,su.email,su.status from sys_role sr left join sys_user_role sur on sr.id = sur.role_id left join sys_user su on sur.user_id = su.id")
-//    List<UserListItemVO> selectAllUsers();
+    @Select("select su.id userId,su.phone,su.username,su.nickname,su.email,su.status from sys_role sr left join sys_user_role sur on sr.id = sur.role_id left join sys_user su on sur.user_id = su.id")
+    List<UserListItemVO> selectAllUsers();
 }

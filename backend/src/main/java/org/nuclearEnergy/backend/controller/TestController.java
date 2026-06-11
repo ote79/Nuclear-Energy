@@ -6,6 +6,7 @@ import org.nuclearEnergy.backend.entity.SysUser;
 import org.nuclearEnergy.backend.exception.BusinessException;
 import org.nuclearEnergy.backend.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,9 @@ public class TestController {
 
     @Autowired
     SysUserMapper userMapper;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @GetMapping("/hello")
     public Result<String> hello(){
@@ -39,5 +43,18 @@ public class TestController {
         return Result.success(sysUser);
     }
 
+
+
+    @GetMapping("/redis/set")
+    public Result<String> redisSet() {
+        stringRedisTemplate.opsForValue().set("test:hello", "world");
+        return Result.success("写入成功");
+    }
+
+    @GetMapping("/redis/get")
+    public Result<String> redisGet() {
+        String value = stringRedisTemplate.opsForValue().get("test:hello");
+        return Result.success(value);
+    }
 
 }

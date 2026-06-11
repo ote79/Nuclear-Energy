@@ -28,7 +28,7 @@ public class KnowledgeController {
     }
 
     @GetMapping("/{id}")
-    public Result<KnowledgeArticleDetailVO> getArticleById(@PathVariable Long id){
+    public Result<KnowledgeArticleDetailVO> getArticleById(@PathVariable Long id) {
         return Result.success(knowledgeService.getPublishedArticleById(id));
     }
 
@@ -43,9 +43,7 @@ public class KnowledgeController {
 
         Long total = knowledgeService.getPublishedArticleCount(categoryId, keyword);
 
-        return Result.success(new PageResultVO<>(
-                knowledgeService.getKnowledgeArticleListItem(categoryId, keyword, offset, pageSize),
-                total
-        ));
+        return Result.success(PageResultVO.of(knowledgeService.getKnowledgeArticleListItem(categoryId, keyword, offset, pageSize),
+                total));
     }
 }

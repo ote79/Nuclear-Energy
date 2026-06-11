@@ -12,7 +12,7 @@ backend：后端目录已初始化
 
 -springboot 4.0.6
 -mysql 8
-
+-redis
 协作约定：
 
 -前端同学主要在 frontend 目录开发。
