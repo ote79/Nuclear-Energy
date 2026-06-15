@@ -1,6 +1,5 @@
 package org.nuclearEnergy.backend.service;
 
-import org.nuclearEnergy.backend.entity.KnowledgeArticle;
 import org.nuclearEnergy.backend.vo.KnowledgeArticleDetailVO;
 import org.nuclearEnergy.backend.vo.KnowledgeArticleListItemVO;
 import org.nuclearEnergy.backend.vo.KnowledgeCategoryVO;

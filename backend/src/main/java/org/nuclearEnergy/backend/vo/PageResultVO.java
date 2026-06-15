@@ -16,4 +16,8 @@ public class PageResultVO<T> {
         this.total = total;
 
     }
+
+    public static <T> PageResultVO<T> of(List<T> list, Long total) {
+        return new PageResultVO<>(list, total);
+    }
 }
