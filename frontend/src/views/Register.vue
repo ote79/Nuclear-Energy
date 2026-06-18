@@ -51,7 +51,7 @@
 
           <el-form ref="formRef" :model="form" :rules="rules" label-position="top" size="large">
             <el-form-item label="用户名" prop="username">
-              <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="User" class="!h-12" />
+              <el-input v-model="form.username" placeholder="请输入用户名（3-20个字符）" prefix-icon="User" class="!h-12" />
             </el-form-item>
             <el-form-item label="昵称" prop="nickname">
               <el-input v-model="form.nickname" placeholder="请输入您的昵称" prefix-icon="UserFilled" class="!h-12" />
@@ -119,6 +119,7 @@ const rules = {
     { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
   ],
   email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
     { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
   ],
   password: [
