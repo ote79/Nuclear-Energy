@@ -4,12 +4,8 @@ server:
 spring:
   application:
     name: nuclear-energy
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/project1
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  profiles:
+    active: dev
 
 mybatis-plus:
   configuration:
@@ -19,7 +15,3 @@ mybatis-plus:
 logging:
   level:
     org.example.nuclearenergypopularization: debug
-
-jwt:
-  secret: nuclear-energy-secret
-  expire-time: 86400000

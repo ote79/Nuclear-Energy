@@ -8,6 +8,7 @@ Thumbs.db
 *.ipr
 *.iws
 
+mysql-tunnel.cmd
 
 *.log
 logs/
@@ -30,3 +31,4 @@ logs/
 
 *.tmp
 *.temp
+/backend/src/main/resources/application-dev.yml
