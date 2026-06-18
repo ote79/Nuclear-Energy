@@ -31,4 +31,5 @@ public class CourseController {
         return Result.success(PageResultVO.of(courseService.getPublishedCourseList(keyword,offset,pageSize), courseService.getPublishedCourseCount(keyword)));
     }
 
+
 }
