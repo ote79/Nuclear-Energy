@@ -4,20 +4,18 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.nuclearEnergy.backend.entity.CourseChapter;
+import org.nuclearEnergy.backend.entity.QuizOption;
 
 import java.util.List;
 
 @Mapper
-public interface CourseChapterMapper extends BaseMapper<CourseChapter> {
+public interface QuizOptionMapper extends BaseMapper<QuizOption> {
 
     @Select("""
             select *
-            from course_chapter
-            where course_id = #{courseId}
-              and status = 1
+            from quiz_option
+            where question_id = #{questionId}
             order by sort asc, id asc
             """)
-    List<CourseChapter> selectPublishedChaptersByCourseId(@Param("courseId") Long courseId);
-
+    List<QuizOption> selectByQuestionId(@Param("questionId") Long questionId);
 }

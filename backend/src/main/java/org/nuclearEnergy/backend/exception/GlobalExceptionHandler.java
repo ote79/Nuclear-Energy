@@ -2,6 +2,7 @@ package org.nuclearEnergy.backend.exception;
 
 
 import org.nuclearEnergy.backend.common.Result;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,10 +22,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult()
-                .getFieldError()
-                .getDefaultMessage();
+        String message = "参数校验失败";
+        if (e.getBindingResult().getFieldError() != null) {
+            message = e.getBindingResult()
+                    .getFieldError()
+                    .getDefaultMessage();
+        }
         return Result.fail(400, message);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Result<String> handleConstraintViolationException(ConstraintViolationException e) {
+        return Result.fail(400, e.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)

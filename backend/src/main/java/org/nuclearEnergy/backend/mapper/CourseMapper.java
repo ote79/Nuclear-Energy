@@ -2,6 +2,7 @@ package org.nuclearEnergy.backend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.nuclearEnergy.backend.entity.Course;
 
@@ -21,7 +22,9 @@ public interface CourseMapper extends BaseMapper<Course> {
             order by create_time desc
             limit #{offset}, #{pageSize}
             """)
-    List<Course> getPublishedCourseList(String keyword, Integer offset, Integer pageSize);
+    List<Course> getPublishedCourseList(@Param("keyword") String keyword,
+                                        @Param("offset") Integer offset,
+                                        @Param("pageSize") Integer pageSize);
 
     @Select("""
             select count(*)
@@ -32,6 +35,14 @@ public interface CourseMapper extends BaseMapper<Course> {
                    or title like concat('%', #{keyword}, '%')
                    or description like concat('%', #{keyword}, '%'))
             """)
-    Long getPublishedCourseCount(String keyword);
+    Long getPublishedCourseCount(@Param("keyword") String keyword);
+
+    @Select("""
+            select *
+            from course
+            where id = #{id}
+              and status = 1
+            """)
+    Course getPublishedCourseById(@Param("id") Long id);
 
 }

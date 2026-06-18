@@ -12,6 +12,7 @@ mysql-tunnel.cmd
 
 *.log
 logs/
+**/uploads/
 
 .env
 .env.*
