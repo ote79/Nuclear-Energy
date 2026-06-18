@@ -51,7 +51,7 @@
 
           <el-form ref="formRef" :model="form" :rules="rules" label-position="top" size="large">
             <el-form-item label="用户名" prop="username">
-              <el-input v-model="form.username" placeholder="请输入用户名（3-20位）" prefix-icon="User" class="!h-12" />
+              <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="User" class="!h-12" />
             </el-form-item>
             <el-form-item label="昵称" prop="nickname">
               <el-input v-model="form.nickname" placeholder="请输入您的昵称" prefix-icon="UserFilled" class="!h-12" />
@@ -60,10 +60,10 @@
               <el-input v-model="form.phone" placeholder="请输入手机号" prefix-icon="Cellphone" class="!h-12" />
             </el-form-item>
             <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱地址（选填）" prefix-icon="Message" class="!h-12" />
+              <el-input v-model="form.email" placeholder="请输入邮箱地址" prefix-icon="Message" class="!h-12" />
             </el-form-item>
             <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password" type="password" placeholder="请输入密码（至少6位）" prefix-icon="Lock" show-password class="!h-12" />
+              <el-input v-model="form.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password class="!h-12" />
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmPassword">
               <el-input v-model="form.confirmPassword" type="password" placeholder="请再次输入密码" prefix-icon="Lock" show-password class="!h-12" @keyup.enter="handleRegister" />
