@@ -37,6 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { getCourseList } from '../api/course'
 
 const loading = ref(false)
@@ -45,15 +46,6 @@ const page = ref(1)
 const pageSize = 9
 const total = ref(0)
 const keyword = ref('')
-
-const mockList = [
-  { id: 1, title: '核能基础知识入门', description: '从原子结构到核裂变原理，系统讲解核能基础知识。', chapterCount: 10, duration: '5小时30分', progress: 0 },
-  { id: 2, title: '辐射防护与安全', description: '了解各类辐射的防护措施和安全操作规范。', chapterCount: 8, duration: '4小时', progress: 0 },
-  { id: 3, title: '核电站运行原理', description: '深入学习核电站各系统的工作原理和运行机制。', chapterCount: 12, duration: '6小时', progress: 0 },
-  { id: 4, title: '核能与环境保护', description: '探讨核能发电对环境的影响及可持续发展。', chapterCount: 6, duration: '3小时', progress: 0 },
-  { id: 5, title: '核技术在医疗中的应用', description: '放射性同位素在诊断和治疗中的应用。', chapterCount: 7, duration: '3小时30分', progress: 0 },
-  { id: 6, title: '世界核电发展历程', description: '从第一座核电站到第四代核能系统的演进。', chapterCount: 9, duration: '4小时30分', progress: 0 }
-]
 
 let searchTimer = null
 
@@ -71,9 +63,10 @@ async function fetchData() {
     const res = await getCourseList({ page: page.value, pageSize, keyword: keyword.value })
     list.value = res.data?.list || []
     total.value = res.data?.total || 0
-  } catch {
-    list.value = mockList
-    total.value = mockList.length
+  } catch (e) {
+    list.value = []
+    total.value = 0
+    ElMessage.error(e?.message || '获取课程列表失败')
   } finally {
     loading.value = false
   }

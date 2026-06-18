@@ -131,23 +131,23 @@
               <el-icon :size="18" color="#14b8a6"><TrendCharts /></el-icon>
             </div>
           </div>
-          <div class="text-[28px] font-bold text-gray-800 mb-3">65%</div>
-          <el-progress :percentage="65" :stroke-width="8" color="#14b8a6" :show-text="false" />
-          <div class="text-xs text-gray-400 mt-2">已完成 8/12 课程</div>
+          <div class="text-[28px] font-bold text-gray-800 mb-3">{{ learningProgress }}%</div>
+          <el-progress :percentage="learningProgress" :stroke-width="8" color="#14b8a6" :show-text="false" />
+          <div class="text-xs text-gray-400 mt-2">已完成 {{ learningStats.completedCourses }}/{{ platformStats.courseCount }} 课程</div>
         </div>
 
         <div class="bg-white rounded-xl p-5 border border-gray-100 hover:shadow-md transition-all cursor-default">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-sm text-gray-400">累计剂量</span>
+            <span class="text-sm text-gray-400">测验次数</span>
             <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-              <el-icon :size="18" color="#f97316"><WarningFilled /></el-icon>
+              <el-icon :size="18" color="#f97316"><Edit /></el-icon>
             </div>
           </div>
-          <div class="text-[28px] font-bold text-gray-800 mb-3">120 <span class="text-sm font-normal text-gray-400">mSv</span></div>
+          <div class="text-[28px] font-bold text-gray-800 mb-3">{{ quizStats.totalAttempts }} <span class="text-sm font-normal text-gray-400">次</span></div>
           <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-500 rounded-full" style="width: 12%" />
+            <div class="h-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-500 rounded-full" :style="{ width: Math.min(quizStats.avgScore, 100) + '%' }" />
           </div>
-          <div class="text-xs text-gray-400 mt-2">远低于安全阈值 1000 mSv</div>
+          <div class="text-xs text-gray-400 mt-2">平均得分 {{ quizStats.avgScore || 0 }} 分</div>
         </div>
 
         <div class="bg-white rounded-xl p-5 border border-gray-100 hover:shadow-md transition-all cursor-default">
@@ -316,30 +316,30 @@
           </div>
         </div>
 
-        <!-- 学习排行榜 -->
+        <!-- 平台数据 -->
         <div class="bg-white rounded-xl p-6 border border-gray-100">
-          <h2 class="text-lg font-bold text-gray-800 mb-1">学习排行榜</h2>
-          <p class="text-sm text-gray-400 mb-5">本周学习积分排名</p>
+          <h2 class="text-lg font-bold text-gray-800 mb-1">平台数据</h2>
+          <p class="text-sm text-gray-400 mb-5">实时统计概览</p>
           <div class="space-y-3">
-            <div
-              v-for="user in leaderboard"
-              :key="user.name"
-              class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors"
-            >
-              <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0" :class="user.rankClass">
-                {{ user.rank }}
-              </div>
-              <el-avatar :size="36" :style="{ background: user.avatarBg }">
-                {{ user.name[0] }}
-              </el-avatar>
-              <div class="flex-1 min-w-0">
-                <div class="font-medium text-gray-800 text-sm">{{ user.name }}</div>
-                <div class="text-xs text-gray-400">{{ user.progress }}</div>
-              </div>
-              <div class="text-right">
-                <div class="font-bold text-gray-800">{{ user.score }}</div>
-                <div class="text-xs text-gray-400">积分</div>
-              </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl">
+              <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm text-white">1</div>
+              <div class="flex-1 font-medium text-gray-800 text-sm">注册用户</div>
+              <div class="font-bold text-gray-800">{{ platformStats.userCount || 0 }}</div>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl">
+              <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center font-bold text-sm text-white">2</div>
+              <div class="flex-1 font-medium text-gray-800 text-sm">课程总数</div>
+              <div class="font-bold text-gray-800">{{ platformStats.courseCount || 0 }}</div>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl">
+              <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center font-bold text-sm text-white">3</div>
+              <div class="flex-1 font-medium text-gray-800 text-sm">科普文章</div>
+              <div class="font-bold text-gray-800">{{ platformStats.articleCount || 0 }}</div>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl">
+              <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center font-bold text-sm text-white">4</div>
+              <div class="flex-1 font-medium text-gray-800 text-sm">知识测验</div>
+              <div class="font-bold text-gray-800">{{ platformStats.quizCount || 0 }}</div>
             </div>
           </div>
         </div>
@@ -382,8 +382,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getNuclearFacilities, getPlatformStats, getBanners, getLearningStats, getQuizStats } from '../api/stats'
+import { getCourseList } from '../api/course'
+import { ElMessage } from 'element-plus'
 
+// ===== 辐射剂量对比图（静态计算数据，无需 API） =====
 const radiationData = [
   { name: '吃一根香蕉', dose: '0.1 μSv', width: 1.5, color: '#22c55e' },
   { name: '一次胸透X光', dose: '20 μSv', width: 3.5, color: '#10b981' },
@@ -397,38 +401,83 @@ const radiationData = [
   { name: 'LD50 半致死剂量', dose: '4,000 mSv', width: 95, color: '#991b1b' }
 ]
 
-const courseCards = [
-  {
-    id: 1,
-    title: '核能基础知识入门',
-    desc: '从原子结构、核裂变原理到核电站组成，系统讲解核能基础知识。',
-    chapterCount: 10,
-    duration: '5h 30m',
-    tag: '入门',
-    tagType: 'success',
-    gradient: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)'
-  },
-  {
-    id: 2,
-    title: '辐射防护与安全',
-    desc: '了解α、β、γ射线的特性及防护措施，掌握安全操作规范。',
-    chapterCount: 8,
-    duration: '4h',
-    tag: '进阶',
-    tagType: 'warning',
-    gradient: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)'
-  },
-  {
-    id: 3,
-    title: '核电站运行原理',
-    desc: '深入学习核电站各系统工作原理和运行机制，了解核电发展。',
-    chapterCount: 12,
-    duration: '6h',
-    tag: '高级',
-    tagType: 'danger',
-    gradient: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)'
+// ===== 推荐课程 -- API 驱动 =====
+const courseCards = ref([])
+const courseLoading = ref(false)
+
+async function fetchCourses() {
+  courseLoading.value = true
+  try {
+    const res = await getCourseList({ page: 1, pageSize: 3 })
+    courseCards.value = (res.data?.list || []).map(c => ({
+      ...c,
+      desc: c.description || '',
+      tag: c.level || '入门',
+      tagType: c.level === '高级' ? 'danger' : c.level === '进阶' ? 'warning' : 'success',
+      gradient: c.gradient || 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)'
+    }))
+  } catch {
+    // API 不通时用 fallback
   }
-]
+}
+
+// ===== 核设施 -- API 驱动 =====
+const facilities = ref([])
+const facilityLoading = ref(false)
+
+const statusMap = { operating: { tag: 'success', label: '运行中' }, decommissioned: { tag: 'danger', label: '已退役' }, decom: { tag: 'info', label: '退役中' }, monitoring: { tag: 'warning', label: '监测中' }, closed: { tag: 'danger', label: '已关闭' } }
+
+async function fetchFacilities() {
+  facilityLoading.value = true
+  try {
+    const res = await getNuclearFacilities()
+    facilities.value = (res.data || []).map(f => ({
+      ...f,
+      coord: f.lat && f.lng ? `${f.lat.toFixed(3)}°N, ${f.lng.toFixed(3)}°E` : '',
+      statusTag: statusMap[f.status]?.tag || 'info',
+      statusLabel: statusMap[f.status]?.label || f.status,
+      newsUrl: f.newsUrl || `https://www.baidu.com/s?wd=${encodeURIComponent(f.name)}`
+    }))
+  } catch {
+    // API 不通时用 fallback
+  }
+}
+
+// ===== 平台统计 -- API 驱动 =====
+const platformStats = ref({ userCount: 0, courseCount: 0, articleCount: 0, quizCount: 0 })
+async function fetchPlatformStats() {
+  try {
+    const res = await getPlatformStats()
+    if (res.data) platformStats.value = res.data
+  } catch { /* silent */ }
+}
+
+// ===== 个人学习统计 -- API 驱动 =====
+const learningStats = ref({ totalHours: 0, completedCourses: 0 })
+const quizStats = ref({ totalAttempts: 0, avgScore: 0 })
+
+const learningProgress = computed(() => {
+  const total = platformStats.value.courseCount
+  const completed = learningStats.value.completedCourses
+  return total ? Math.round(completed / total * 100) : 0
+})
+
+async function fetchLearningStats() {
+  try {
+    const [lRes, qRes] = await Promise.allSettled([
+      getLearningStats(),
+      getQuizStats()
+    ])
+    if (lRes.status === 'fulfilled' && lRes.value.data?.cards) {
+      learningStats.value = lRes.value.data.cards
+    }
+    if (qRes.status === 'fulfilled' && qRes.value.data?.cards) {
+      quizStats.value = qRes.value.data.cards
+    }
+  } catch { /* silent */ }
+}
+
+// ===== 平台数据（已通过 API 加载） =====
 
 const quickTools = [
   { label: '科普知识', desc: '核能知识库', icon: 'Reading', color: '#3b82f6', bg: '#eff6ff', path: '/knowledge' },
@@ -437,61 +486,7 @@ const quickTools = [
   { label: '剂量计算', desc: '辐射剂量', icon: 'DataAnalysis', color: '#f97316', bg: '#fff7ed', path: '/dose-calculator' }
 ]
 
-const leaderboard = [
-  { rank: 1, rankClass: 'bg-yellow-500 text-white', name: '张晓明', progress: '完成 12 门课程', score: 1280, avatarBg: '#3b82f6' },
-  { rank: 2, rankClass: 'bg-gray-300 text-white', name: '李华', progress: '测验正确率 92%', score: 1150, avatarBg: '#14b8a6' },
-  { rank: 3, rankClass: 'bg-orange-300 text-white', name: '王芳', progress: '学习时长 48h', score: 980, avatarBg: '#8b5cf6' },
-  { rank: 4, rankClass: 'bg-gray-100 text-gray-600', name: '赵强', progress: '完成 8 门课程', score: 820, avatarBg: '#f59e0b' },
-  { rank: 5, rankClass: 'bg-gray-100 text-gray-600', name: '刘敏', progress: '完成 7 门课程', score: 760, avatarBg: '#ef4444' },
-  { rank: 6, rankClass: 'bg-gray-100 text-gray-600', name: '陈勇', progress: '完成 6 门课程', score: 690, avatarBg: '#06b6d4' }
-]
-
-// 核辐射监测站数据
-const facilities = [
-  {
-    id: 1, name: '切尔诺贝利', coord: '51.389°N, 30.099°E', lng: 30.099, lat: 51.389,
-    gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    statusTag: 'danger', statusLabel: '已关闭',
-    detail: '1986年4月26日，4号反应堆发生爆炸，导致史上最严重的核事故。周围30公里被划为禁区。事故促使全球核电安全标准大幅提升。',
-    newsUrl: 'https://www.baidu.com/s?wd=切尔诺贝利核事故最新'
-  },
-  {
-    id: 2, name: '福岛第一', coord: '37.421°N, 141.033°E', lng: 141.033, lat: 37.421,
-    gradient: 'linear-gradient(135deg, #0c3547 0%, #134e6f 50%, #1a6b8a 100%)',
-    statusTag: 'danger', statusLabel: '退役中',
-    detail: '2011年3月11日，日本东北部9.0级大地震引发海啸，导致核电站冷却系统失效，1-3号机组堆芯熔毁。约15万人撤离，核废水处理至今仍在进行。',
-    newsUrl: 'https://www.baidu.com/s?wd=福岛第一核电站最新进展'
-  },
-  {
-    id: 3, name: '大亚湾', coord: '22.596°N, 114.543°E', lng: 114.543, lat: 22.596,
-    gradient: 'linear-gradient(135deg, #0d4f3c 0%, #0d9488 50%, #14b8a6 100%)',
-    statusTag: 'success', statusLabel: '运行中',
-    detail: '中国首座大型商用核电站，位于深圳市大鹏新区。1994年投入商业运行，2台984MW压水堆机组，年发电量约150亿千瓦时，主要供应香港和广东。',
-    newsUrl: 'https://www.baidu.com/s?wd=大亚湾核电站运行情况'
-  },
-  {
-    id: 4, name: '秦山核电', coord: '30.434°N, 120.957°E', lng: 120.957, lat: 30.434,
-    gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%)',
-    statusTag: 'success', statusLabel: '运行中',
-    detail: '中国大陆第一座核电基地，位于浙江海盐。1991年首次并网发电，目前共9台机组，总装机容量约660万千瓦，是中国最大的核电基地之一。',
-    newsUrl: 'https://www.baidu.com/s?wd=秦山核电站'
-  },
-  {
-    id: 5, name: '三里岛', coord: '40.154°N, 76.724°W', lng: -76.724, lat: 40.154,
-    gradient: 'linear-gradient(135deg, #4a1d1d 0%, #991b1b 50%, #dc2626 100%)',
-    statusTag: 'danger', statusLabel: '已退役',
-    detail: '1979年3月28日，2号机组因设备故障和操作失误导致部分堆芯熔毁。虽未造成直接伤亡，但严重打击了美国核电发展。2019年全部退役。',
-    newsUrl: 'https://www.baidu.com/s?wd=三里岛核事故'
-  },
-  {
-    id: 6, name: 'IAEA监测站', coord: '48.235°N, 16.415°E', lng: 16.415, lat: 48.235,
-    gradient: 'linear-gradient(135deg, #422006 0%, #b45309 50%, #f59e0b 100%)',
-    statusTag: 'warning', statusLabel: '监测中',
-    detail: '国际原子能机构(IAEA)总部位于奥地利维也纳，在全球设有多个辐射监测站，实时监测环境辐射水平，发布全球辐射安全报告。',
-    newsUrl: 'https://www.iaea.org/'
-  }
-]
-
+// ===== 设施详情弹窗 =====
 const facilityDialog = ref(false)
 const selectedFacility = ref(null)
 const showAllFacilities = ref(false)
@@ -517,4 +512,12 @@ function openMap(fac, provider) {
 function openFacilityNews(fac) {
   window.open(fac.newsUrl, '_blank')
 }
+
+// ===== 页面加载时拉取数据 =====
+onMounted(() => {
+  fetchCourses()
+  fetchFacilities()
+  fetchPlatformStats()
+  fetchLearningStats()
+})
 </script>

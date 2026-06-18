@@ -55,21 +55,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getQuizList } from '../api/quiz'
-import { getWrongCount } from '../stores/wrongBook'
+import { ElMessage } from 'element-plus'
+import { getQuizList, getWrongQuestions } from '../api/quiz'
 
 const loading = ref(false)
-const wrongCount = ref(getWrongCount())
+const wrongCount = ref(0)
 const list = ref([])
 const page = ref(1)
 const pageSize = 9
 const total = ref(0)
-
-const mockList = [
-  { id: 1, title: '核辐射基础知识测验', description: '测试你对核辐射基本概念的理解', questionCount: 20, timeLimit: 30 },
-  { id: 2, title: '核电站安全知识测验', description: '检验核电站安全防护知识掌握程度', questionCount: 15, timeLimit: 20 },
-  { id: 3, title: '辐射防护实操测验', description: '日常生活中的辐射防护知识', questionCount: 25, timeLimit: 35 }
-]
 
 async function fetchData() {
   loading.value = true
@@ -77,13 +71,20 @@ async function fetchData() {
     const res = await getQuizList({ page: page.value, pageSize })
     list.value = res.data?.list || []
     total.value = res.data?.total || 0
-  } catch {
-    list.value = mockList
-    total.value = mockList.length
+  } catch (e) {
+    list.value = []
+    total.value = 0
+    ElMessage.error(e.message || '加载测验失败')
   } finally {
     loading.value = false
   }
 }
 
-onMounted(() => fetchData())
+onMounted(() => {
+  fetchData()
+  // 获取错题数（失败不提示）
+  getWrongQuestions({ page: 1, pageSize: 1 }).then(r => {
+    wrongCount.value = r.data?.total || 0
+  }).catch(() => {})
+})
 </script>

@@ -45,7 +45,10 @@ export const useUserStore = defineStore('user', () => {
   async function register(form) {
     try {
       return await registerApi(form)
-    } catch {
+    } catch (e) {
+      // 后端返回的 message 直接透传
+      if (e.isBusinessError) throw e
+      // 后端不通才走本地 mock
       const users = getMockUsers()
       if (users[form.username]) throw new Error('用户名已存在')
       const userData = {

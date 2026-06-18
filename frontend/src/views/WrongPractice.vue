@@ -154,7 +154,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { getAllWrongQuestions, getWrongCount, removeCorrectQuestions, clearWrongBook } from '../stores/wrongBook'
+import { getWrongQuestions, removeWrongQuestions, clearWrongQuestions } from '../api/quiz'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const allQuestions = ref([])
@@ -182,8 +182,19 @@ const uniqueQuizTitles = computed(() =>
   [...new Set(allQuestions.value.map(q => q.quizTitle).filter(Boolean))]
 )
 
-function loadQuestions() {
-  allQuestions.value = getAllWrongQuestions()
+const loading = ref(false)
+
+async function loadQuestions() {
+  loading.value = true
+  try {
+    const res = await getWrongQuestions({ page: 1, pageSize: 999 })
+    allQuestions.value = res.data?.list || []
+  } catch (e) {
+    ElMessage.error(e?.message || '获取错题失败')
+    allQuestions.value = []
+  } finally {
+    loading.value = false
+  }
 }
 
 function startPractice() {
@@ -278,32 +289,39 @@ function goToQuestion(index) {
   isCorrect.value = false
 }
 
-function finishPractice() {
+async function finishPractice() {
   practiceDone.value = true
   submitted.value = true
-  // Remove correct questions from the wrong book
+  // 移除做对的题目
   const correctIds = practiceQuestions.value
     .filter(q => !wrongQuestionIds.value.includes(q.id))
     .map(q => q.id)
-  if (correctIds.length > 0) removeCorrectQuestions(correctIds)
+  if (correctIds.length > 0) {
+    removeWrongQuestions({ questionIds: correctIds }).catch(() => {})
+  }
 }
 
-function restartWrong() {
-  removeCorrectQuestions(practiceQuestions.value.filter(q => !wrongQuestionIds.value.includes(q.id)).map(q => q.id))
-  loadQuestions()
+async function restartWrong() {
+  const correctIds = practiceQuestions.value
+    .filter(q => !wrongQuestionIds.value.includes(q.id))
+    .map(q => q.id)
+  if (correctIds.length > 0) {
+    try { await removeWrongQuestions({ questionIds: correctIds }) } catch {}
+  }
+  await loadQuestions()
   startPractice()
 }
 
 function handleRetry() {
-  loadQuestions()
   startPractice()
+  // 重新开始不用重新加载
 }
 
 async function clearWrongBookConfirm() {
   try {
     await ElMessageBox.confirm('确定要清空所有错题记录吗？', '确认', { type: 'warning' })
-    clearWrongBook()
-    loadQuestions()
+    await clearWrongQuestions()
+    allQuestions.value = []
     ElMessage.success('错题库已清空')
   } catch { /* cancelled */ }
 }

@@ -55,6 +55,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
+import { ElMessage } from 'element-plus'
 import { getLearningStats, getQuizStats } from '../api/stats'
 
 Chart.register(...registerables)
@@ -65,18 +66,11 @@ const quizChartRef = ref(null)
 const records = ref([])
 
 const statCards = ref([
-  { label: '学习时长', value: '12 小时', icon: 'Timer', color: '#1a73e8', bg: '#e8f0fe' },
-  { label: '完成课程', value: '3 门', icon: 'VideoCamera', color: '#0d9488', bg: '#ccfbf1' },
-  { label: '测验次数', value: '8 次', icon: 'Edit', color: '#f59e0b', bg: '#fef3c7' },
-  { label: '平均正确率', value: '78%', icon: 'TrendCharts', color: '#ef4444', bg: '#fee2e2' }
+  { label: '学习时长', value: '--', icon: 'Timer', color: '#1a73e8', bg: '#e8f0fe' },
+  { label: '完成课程', value: '--', icon: 'VideoCamera', color: '#0d9488', bg: '#ccfbf1' },
+  { label: '测验次数', value: '--', icon: 'Edit', color: '#f59e0b', bg: '#fef3c7' },
+  { label: '平均正确率', value: '--', icon: 'TrendCharts', color: '#ef4444', bg: '#fee2e2' }
 ])
-
-const mockRecords = [
-  { title: '核能基础知识入门', type: 'course', progress: 100, updatedAt: '2026-06-02 14:30' },
-  { title: '什么是核辐射', type: 'knowledge', progress: 100, updatedAt: '2026-06-01 10:20' },
-  { title: '辐射防护与安全', type: 'course', progress: 60, updatedAt: '2026-05-30 16:45' },
-  { title: '核电站安全知识测验', type: 'knowledge', progress: 100, updatedAt: '2026-05-28 09:15' }
-]
 
 let learningChart = null
 let quizChart = null
@@ -127,6 +121,14 @@ onMounted(async () => {
   loading.value = true
   try {
     const [lRes, qRes] = await Promise.allSettled([getLearningStats(), getQuizStats()])
+
+    if (lRes.status === 'rejected') {
+      ElMessage.error(lRes.reason?.message || '获取学习统计失败')
+    }
+    if (qRes.status === 'rejected') {
+      ElMessage.error(qRes.reason?.message || '获取测验统计失败')
+    }
+
     const lData = lRes.status === 'fulfilled' ? lRes.value.data : null
     const qData = qRes.status === 'fulfilled' ? qRes.value.data : null
 
@@ -138,19 +140,20 @@ onMounted(async () => {
       statCards.value[2].value = `${qData.cards.totalAttempts || 0} 次`
       statCards.value[3].value = `${qData.cards.avgScore || 0}%`
     }
-    records.value = lData?.records?.length ? lData.records : mockRecords
+    records.value = lData?.records?.length ? lData.records : []
 
     await nextTick()
     renderCharts(
-      lData?.chart || { labels: ['05-28', '05-29', '05-30', '05-31', '06-01', '06-02', '06-03'], values: [30, 45, 20, 60, 35, 50, 40] },
-      qData?.chart || { labels: ['第1次', '第2次', '第3次', '第4次', '第5次'], values: [60, 72, 85, 78, 90] }
+      lData?.chart || { labels: [], values: [] },
+      qData?.chart || { labels: [], values: [] }
     )
-  } catch {
-    records.value = mockRecords
+  } catch (e) {
+    ElMessage.error(e?.message || '加载统计数据失败')
+    records.value = []
     await nextTick()
     renderCharts(
-      { labels: ['05-28', '05-29', '05-30', '05-31', '06-01', '06-02', '06-03'], values: [30, 45, 20, 60, 35, 50, 40] },
-      { labels: ['第1次', '第2次', '第3次', '第4次', '第5次'], values: [60, 72, 85, 78, 90] }
+      { labels: [], values: [] },
+      { labels: [], values: [] }
     )
   } finally {
     loading.value = false
