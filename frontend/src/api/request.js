@@ -25,9 +25,10 @@ request.interceptors.response.use(
       if (res.code === 401) {
         localStorage.removeItem('token')
         router.push('/login')
-        ElMessage.error('登录已过期，请重新登录')
       }
-      return Promise.reject(new Error(res.message))
+      const err = new Error(res.message)
+      err.isBusinessError = true
+      return Promise.reject(err)
     }
     return res
   },

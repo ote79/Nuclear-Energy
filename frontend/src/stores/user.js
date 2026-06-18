@@ -26,7 +26,10 @@ export const useUserStore = defineStore('user', () => {
       localStorage.setItem('token', res.data.token)
       await fetchUserInfo()
       return res
-    } catch {
+    } catch (e) {
+      // 后端返回的 message 直接透传
+      if (e.isBusinessError) throw e
+      // 后端不通才走本地 mock
       const users = getMockUsers()
       const user = users[form.username]
       if (!user) throw new Error('账号不存在')
